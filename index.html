@@ -13,11 +13,35 @@
       grid-template-rows: repeat(12, 50px); /* 12 rows */
       gap: 4px;
     }
+    .game-over {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
   <h1 class="text-4xl font-bold mb-4">2048 Tetris</h1>
-  <div id="game-grid" class="bg-gray-800 p-4 rounded-lg"></div>
+  <div class="flex gap-8">
+    <div class="relative">
+      <div id="game-grid" class="bg-gray-800 p-4 rounded-lg"></div>
+      <div id="game-over" class="game-over rounded-lg w-full h-full">
+        <h2 class="text-3xl font-bold mb-4">Game Over!</h2>
+        <button onclick="restartGame()" class="bg-blue-500 px-4 py-2 rounded">Play Again</button>
+      </div>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg">
+      <h2 class="text-2xl font-bold mb-4">Score</h2>
+      <p class="text-4xl font-bold" id="score">0</p>
+      <div class="mt-4">
+        <h3 class="text-xl font-bold mb-2">High Score</h3>
+        <p class="text-3xl font-bold" id="highScore">0</p>
+      </div>
+    </div>
+  </div>
   <p class="mt-4">Use Arrow Keys: Left/Right to Move, Down to Drop Faster</p>
 
   <script>
@@ -26,6 +50,9 @@
     const BLOCK_SIZE = 50; // Size of each block in pixels
     let grid = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(0));
     let currentBlock = null;
+    let score = 0;
+    let highScore = localStorage.getItem('highScore') || 0;
+    let gameOver = false;
 
     // Initialize the game grid
     function initGrid() {
@@ -100,8 +127,9 @@
       // Merge all adjacent blocks with the same value
       mergeAllBlocks();
       
-      // Spawn a new block
-      spawnBlock();
+      if (!checkGameOver()) {
+        spawnBlock();
+      }
     }
 
     // Apply gravity to the entire grid
@@ -131,12 +159,14 @@
               // Check right neighbor
               if (col + 1 < GRID_COLS && grid[row][col + 1] === grid[row][col]) {
                 grid[row][col] *= 2;
+                updateScore(grid[row][col]); // Add score when merging
                 grid[row][col + 1] = 0;
                 merged = true;
               }
               // Check bottom neighbor
               if (row + 1 < GRID_ROWS && grid[row + 1][col] === grid[row][col]) {
                 grid[row][col] *= 2;
+                updateScore(grid[row][col]); // Add score when merging
                 grid[row + 1][col] = 0;
                 merged = true;
               }
@@ -150,15 +180,48 @@
 
     // Handle keyboard input
     document.addEventListener("keydown", (e) => {
+      if (gameOver) return;
       if (e.key === "ArrowLeft") moveBlock(-1);
       if (e.key === "ArrowRight") moveBlock(1);
       if (e.key === "ArrowDown") dropBlock();
     });
 
+    function updateScore(points) {
+      score += points;
+      document.getElementById('score').textContent = score;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+        document.getElementById('highScore').textContent = highScore;
+      }
+    }
+
+    function checkGameOver() {
+      if (currentBlock && currentBlock.row === 0 && grid[0][currentBlock.col] !== 0) {
+        gameOver = true;
+        document.getElementById('game-over').style.display = 'flex';
+        return true;
+      }
+      return false;
+    }
+
+    function restartGame() {
+      grid = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(0));
+      currentBlock = null;
+      score = 0;
+      gameOver = false;
+      document.getElementById('score').textContent = '0';
+      document.getElementById('game-over').style.display = 'none';
+      spawnBlock();
+    }
+
     // Start the game
     initGrid();
+    document.getElementById('highScore').textContent = highScore;
     spawnBlock();
-    setInterval(dropBlock, 1000); // Drop block every second
+    setInterval(() => {
+      if (!gameOver) dropBlock();
+    }, 1000); // Drop block every second
   </script>
 </body>
 </html>
