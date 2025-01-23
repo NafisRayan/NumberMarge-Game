@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2048 Tetris</title>
+  <title>NumTetris</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Custom styles for the game grid */
@@ -24,6 +24,8 @@
       padding: 1rem;
       border-radius: 0.5rem;
       min-width: 150px;
+      text-align: center;
+      height: 100%;
     }
 
     #score-value {
@@ -46,7 +48,7 @@
   </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
-  <h1 class="text-4xl font-bold mb-4">2048 Tetris</h1>
+  <h1 class="text-4xl font-bold mb-4">NumTetris</h1>
   <div class="game-container">
     <div id="game-grid" class="bg-gray-800 p-4 rounded-lg"></div>
     <div id="score-board">
