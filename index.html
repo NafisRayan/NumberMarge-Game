@@ -93,6 +93,15 @@
       const { row, col, value } = currentBlock;
       grid[row][col] = value;
       currentBlock = null;
+      
+      // Apply gravity to the placed block
+      let currentRow = row;
+      while (currentRow + 1 < GRID_ROWS && grid[currentRow + 1][col] === 0) {
+        grid[currentRow + 1][col] = grid[currentRow][col];
+        grid[currentRow][col] = 0;
+        currentRow++;
+      }
+      
       mergeBlocks(row, col);
       spawnBlock();
     }
@@ -104,21 +113,33 @@
       const directions = [
         [0, 1], [1, 0], [0, -1], [-1, 0]
       ];
+      let merged = false;
+      
       directions.forEach(([dx, dy]) => {
         const newRow = row + dx;
         const newCol = col + dy;
         if (newRow >= 0 && newRow < GRID_ROWS && newCol >= 0 && newCol < GRID_COLS && grid[newRow][newCol] === value) {
           grid[newRow][newCol] = 0;
           grid[row][col] *= 2;
-          // Make the merged block fall down
-          let currentRow = row;
-          while (currentRow + 1 < GRID_ROWS && grid[currentRow + 1][col] === 0) {
-            grid[currentRow + 1][col] = grid[currentRow][col];
-            grid[currentRow][col] = 0;
-            currentRow++;
-          }
+          merged = true;
         }
       });
+
+      // Apply gravity to entire grid if any merge occurred
+      if (merged) {
+        for (let col = 0; col < GRID_COLS; col++) {
+          for (let row = GRID_ROWS - 1; row >= 0; row--) {
+            if (grid[row][col] !== 0) {
+              let currentRow = row;
+              while (currentRow + 1 < GRID_ROWS && grid[currentRow + 1][col] === 0) {
+                grid[currentRow + 1][col] = grid[currentRow][col];
+                grid[currentRow][col] = 0;
+                currentRow++;
+              }
+            }
+          }
+        }
+      }
     }
 
     // Handle keyboard input
