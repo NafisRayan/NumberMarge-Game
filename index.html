@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2048 Tetris</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom styles for the game grid */
+    #game-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 50px); /* 5 columns */
+      grid-template-rows: repeat(12, 50px); /* 12 rows */
+      gap: 4px;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+  <h1 class="text-4xl font-bold mb-4">2048 Tetris</h1>
+  <div id="game-grid" class="bg-gray-800 p-4 rounded-lg"></div>
+  <p class="mt-4">Use Arrow Keys: Left/Right to Move, Down to Drop Faster</p>
+
+  <script>
+    const GRID_ROWS = 12; // 12 rows
+    const GRID_COLS = 5; // 5 columns
+    const BLOCK_SIZE = 50; // Size of each block in pixels
+    let grid = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(0));
+    let currentBlock = null;
+
+    // Initialize the game grid
+    function initGrid() {
+      const gameGrid = document.getElementById("game-grid");
+      for (let row = 0; row < GRID_ROWS; row++) {
+        for (let col = 0; col < GRID_COLS; col++) {
+          const cell = document.createElement("div");
+          cell.classList.add("w-12", "h-12", "border", "border-gray-700", "flex", "items-center", "justify-center", "text-sm", "font-bold");
+          gameGrid.appendChild(cell);
+        }
+      }
+    }
+
+    // Spawn a new block at the top
+    function spawnBlock() {
+      const value = Math.random() > 0.5 ? 2 : 4;
+      currentBlock = { row: 0, col: Math.floor(GRID_COLS / 2), value };
+      updateGrid();
+    }
+
+    // Update the grid display
+    function updateGrid() {
+      const cells = document.querySelectorAll("#game-grid div");
+      cells.forEach((cell, index) => {
+        const row = Math.floor(index / GRID_COLS);
+        const col = index % GRID_COLS;
+        if (grid[row][col] !== 0) {
+          cell.textContent = grid[row][col];
+          cell.classList.add("bg-blue-500");
+        } else if (currentBlock && row === currentBlock.row && col === currentBlock.col) {
+          cell.textContent = currentBlock.value;
+          cell.classList.add("bg-green-500");
+        } else {
+          cell.textContent = "";
+          cell.classList.remove("bg-blue-500", "bg-green-500");
+        }
+      });
+    }
+
+    // Move the block left or right
+    function moveBlock(direction) {
+      if (!currentBlock) return;
+      const newCol = currentBlock.col + direction;
+      if (newCol >= 0 && newCol < GRID_COLS && grid[currentBlock.row][newCol] === 0) {
+        currentBlock.col = newCol;
+        updateGrid();
+      }
+    }
+
+    // Drop the block down
+    function dropBlock() {
+      if (!currentBlock) return;
+      const newRow = currentBlock.row + 1;
+      if (newRow < GRID_ROWS && grid[newRow][currentBlock.col] === 0) {
+        currentBlock.row = newRow;
+        updateGrid();
+      } else {
+        placeBlock();
+      }
+    }
+
+    // Place the block on the grid
+    function placeBlock() {
+      if (!currentBlock) return;
+      const { row, col, value } = currentBlock;
+      grid[row][col] = value;
+      currentBlock = null;
+      mergeBlocks(row, col);
+      spawnBlock();
+    }
+
+    // Merge blocks with the same value
+    function mergeBlocks(row, col) {
+      const value = grid[row][col];
+      // Check adjacent blocks
+      const directions = [
+        [0, 1], [1, 0], [0, -1], [-1, 0]
+      ];
+      directions.forEach(([dx, dy]) => {
+        const newRow = row + dx;
+        const newCol = col + dy;
+        if (newRow >= 0 && newRow < GRID_ROWS && newCol >= 0 && newCol < GRID_COLS && grid[newRow][newCol] === value) {
+          grid[newRow][newCol] = 0;
+          grid[row][col] *= 2;
+        }
+      });
+    }
+
+    // Handle keyboard input
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") moveBlock(-1);
+      if (e.key === "ArrowRight") moveBlock(1);
+      if (e.key === "ArrowDown") dropBlock();
+    });
+
+    // Start the game
+    initGrid();
+    spawnBlock();
+    setInterval(dropBlock, 1000); // Drop block every second
+  </script>
+</body>
+</html>
