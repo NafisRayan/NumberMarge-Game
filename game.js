@@ -1,4 +1,4 @@
-const GRID_ROWS = 12; // 12 rows
+const GRID_ROWS = 8; // 8 rows
 const GRID_COLS = 5; // 5 columns
 const BLOCK_SIZE = 50; // Size of each block in pixels
 let grid = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(0));
