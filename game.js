@@ -12,7 +12,7 @@ function initGrid() {
     for (let row = 0; row < GRID_ROWS; row++) {
         for (let col = 0; col < GRID_COLS; col++) {
             const cell = document.createElement("div");
-            cell.classList.add("w-24", "h-24", "border", "border-gray-700", "flex", "items-center", "justify-center", "text-sm", "font-bold");
+            cell.classList.add("w-24", "h-24", "border", "border-gray-700", "flex", "items-center", "justify-center", "text-5xl", "font-bold");
             gameGrid.appendChild(cell);
         }
     }
