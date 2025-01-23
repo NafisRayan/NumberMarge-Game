@@ -7,17 +7,59 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Custom styles for the game grid */
+    .game-container {
+      display: flex;
+      gap: 2rem;
+    }
+    
     #game-grid {
       display: grid;
       grid-template-columns: repeat(5, 50px); /* 5 columns */
       grid-template-rows: repeat(12, 50px); /* 12 rows */
       gap: 4px;
     }
+
+    #score-board {
+      background: #1f2937;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      min-width: 150px;
+    }
+
+    #score-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #3b82f6;
+    }
+
+    .game-over {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      padding: 2rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      display: none;
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
   <h1 class="text-4xl font-bold mb-4">2048 Tetris</h1>
-  <div id="game-grid" class="bg-gray-800 p-4 rounded-lg"></div>
+  <div class="game-container">
+    <div id="game-grid" class="bg-gray-800 p-4 rounded-lg"></div>
+    <div id="score-board">
+      <h3 class="text-lg mb-2">Score</h3>
+      <div id="score-value">0</div>
+    </div>
+  </div>
+  <div id="game-over" class="game-over">
+    <h2 class="text-2xl font-bold mb-4">Game Over!</h2>
+    <button onclick="restartGame()" class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">
+      Play Again
+    </button>
+  </div>
   <p class="mt-4">Use Arrow Keys: Left/Right to Move, Down to Drop Faster</p>
 
   <script>
@@ -26,6 +68,8 @@
     const BLOCK_SIZE = 50; // Size of each block in pixels
     let grid = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(0));
     let currentBlock = null;
+    let score = 0;
+    let gameActive = true;
 
     // Initialize the game grid
     function initGrid() {
@@ -100,8 +144,59 @@
       // Merge all adjacent blocks with the same value
       mergeAllBlocks();
       
+      // Check if any column is full
+      if (isGameOver()) {
+        endGame();
+        return;
+      }
+      
       // Spawn a new block
       spawnBlock();
+    }
+
+    // Check if any column is full
+    function isGameOver() {
+      return grid[0].some(cell => cell !== 0);
+    }
+
+    // End the game
+    function endGame() {
+      gameActive = false;
+      document.getElementById('game-over').style.display = 'block';
+      clearInterval(gameInterval);
+    }
+
+    // Restart the game
+    function restartGame() {
+      // Reset game state
+      grid = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(0));
+      currentBlock = null;
+      score = 0;
+      gameActive = true;
+      
+      // Reset UI
+      document.getElementById('score-value').textContent = '0';
+      document.getElementById('game-over').style.display = 'none';
+      
+      // Clear all cells
+      const cells = document.querySelectorAll("#game-grid div");
+      cells.forEach(cell => {
+        cell.textContent = '';
+        cell.classList.remove('bg-blue-500', 'bg-green-500');
+      });
+
+      // Restart game interval
+      clearInterval(gameInterval);
+      gameInterval = setInterval(dropBlock, 1000);
+      
+      // Start new game
+      spawnBlock();
+    }
+
+    // Update the score
+    function updateScore(value) {
+      score += value;
+      document.getElementById('score-value').textContent = score;
     }
 
     // Apply gravity to the entire grid
@@ -130,14 +225,18 @@
             if (grid[row][col] !== 0) {
               // Check right neighbor
               if (col + 1 < GRID_COLS && grid[row][col + 1] === grid[row][col]) {
-                grid[row][col] *= 2;
+                const mergedValue = grid[row][col] * 2;
+                grid[row][col] = mergedValue;
                 grid[row][col + 1] = 0;
+                updateScore(mergedValue);
                 merged = true;
               }
               // Check bottom neighbor
               if (row + 1 < GRID_ROWS && grid[row + 1][col] === grid[row][col]) {
-                grid[row][col] *= 2;
+                const mergedValue = grid[row][col] * 2;
+                grid[row][col] = mergedValue;
                 grid[row + 1][col] = 0;
+                updateScore(mergedValue);
                 merged = true;
               }
             }
@@ -156,9 +255,10 @@
     });
 
     // Start the game
+    let gameInterval;
     initGrid();
     spawnBlock();
-    setInterval(dropBlock, 1000); // Drop block every second
+    gameInterval = setInterval(dropBlock, 1000); // Drop block every second
   </script>
 </body>
 </html>
