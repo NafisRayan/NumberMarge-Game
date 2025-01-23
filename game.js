@@ -1,4 +1,4 @@
-const GRID_ROWS = 8; // 8 rows
+const GRID_ROWS = 6; // Changed from 8 to 6 rows
 const GRID_COLS = 5; // 5 columns
 const BLOCK_SIZE = 50; // Size of each block in pixels
 let grid = Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(0));
@@ -12,7 +12,7 @@ function initGrid() {
     for (let row = 0; row < GRID_ROWS; row++) {
         for (let col = 0; col < GRID_COLS; col++) {
             const cell = document.createElement("div");
-            cell.classList.add("w-12", "h-12", "border", "border-gray-700", "flex", "items-center", "justify-center", "text-sm", "font-bold");
+            cell.classList.add("w-24", "h-24", "border", "border-gray-700", "flex", "items-center", "justify-center", "text-5xl", "font-bold");
             gameGrid.appendChild(cell);
         }
     }

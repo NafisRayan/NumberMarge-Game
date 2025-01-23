@@ -9,27 +9,27 @@
     /* Custom styles for the game grid */
     .game-container {
       display: flex;
-      gap: 2rem;
+      gap: 4rem;
     }
     
     #game-grid {
       display: grid;
-      grid-template-columns: repeat(5, 50px); /* 5 columns */
-      grid-template-rows: repeat(8, 50px); /* 8 rows */
-      gap: 4px;
+      grid-template-columns: repeat(5, 100px); /* 5 columns, doubled size */
+      grid-template-rows: repeat(6, 100px); /* Changed from 8 to 6 rows */
+      gap: 8px; /* Doubled gap */
     }
 
     #score-board {
       background: #1f2937;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      min-width: 150px;
+      padding: 2rem;
+      border-radius: 1rem;
+      min-width: 300px; /* Doubled width */
       text-align: center;
       height: 100%;
     }
 
     #score-value {
-      font-size: 2rem;
+      font-size: 4rem; /* Doubled font size */
       font-weight: bold;
       color: #3b82f6;
     }
@@ -40,29 +40,29 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background: rgba(0, 0, 0, 0.9);
-      padding: 2rem;
-      border-radius: 0.5rem;
+      padding: 4rem; /* Doubled padding */
+      border-radius: 1rem;
       text-align: center;
       display: none;
     }
   </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
-  <h1 class="text-4xl font-bold mb-4">NumTetris</h1>
+  <h1 class="text-6xl font-bold mb-8">NumTetris</h1> <!-- Increased text size and margin -->
   <div class="game-container">
-    <div id="game-grid" class="bg-gray-800 p-4 rounded-lg"></div>
+    <div id="game-grid" class="bg-gray-800 p-8 rounded-lg"></div> <!-- Increased padding -->
     <div id="score-board">
-      <h3 class="text-lg mb-2">Score</h3>
+      <h3 class="text-2xl mb-4">Score</h3> <!-- Increased text size and margin -->
       <div id="score-value">0</div>
     </div>
   </div>
   <div id="game-over" class="game-over">
-    <h2 class="text-2xl font-bold mb-4">Game Over!</h2>
-    <button onclick="restartGame()" class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600">
+    <h2 class="text-4xl font-bold mb-8">Game Over!</h2> <!-- Increased text size and margin -->
+    <button onclick="restartGame()" class="bg-blue-500 px-8 py-4 rounded text-2xl hover:bg-blue-600">
       Play Again
     </button>
   </div>
-  <p class="mt-4">Use Arrow Keys: Left/Right to Move, Down to Drop Faster</p>
+  <p class="mt-8 text-2xl">Use Arrow Keys: Left/Right to Move, Down to Drop Faster</p> <!-- Increased margin and text size -->
 
   <script src="game.js"></script>
 </body>
